@@ -1,0 +1,1459 @@
+Description: This template deploys three VPCs - Service Provider VPC, Shared Services VPC and Application VPC.
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+
+  ServiceProviderVPCName:
+    Description: Enter the name for Service Provider VPC.
+    Type: String
+    Default: Service Provider VPC
+
+  SharedServicesVPCName:
+    Description: Enter the name for Shared Services VPC.
+    Type: String
+    Default: Shared Services VPC
+
+  ApplicationVPCName:
+    Description: Enter the name for Application VPC.
+    Type: String
+    Default: Application VPC
+
+  ServiceProviderVPCCIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for Service Provider VPC
+    Type: String
+    Default: 10.1.0.0/16
+
+  SharedServicesVPCCIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for Shared Services VPC
+    Type: String
+    Default: 10.2.0.0/16
+
+  ApplicationVPCCIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for Application VPC
+    Type: String
+    Default: 10.3.0.0/16
+
+  ServiceProviderVPCPublicSubnet1CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the public subnet in Availability Zone A.
+    Type: String
+    Default: 10.1.0.0/24
+
+  ServiceProviderVPCPublicSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the public subnet in Availability Zone B.
+    Type: String
+    Default: 10.1.1.0/24
+
+  ServiceProviderVPCPrivateSubnet1CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the private subnet in Availability Zone A.
+    Type: String
+    Default: 10.1.2.0/24
+
+  ServiceProviderVPCPrivateSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the private subnet in Availability Zone B.
+    Type: String
+    Default: 10.1.3.0/24
+
+  SharedServicesVPCPublicSubnet1CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the public subnet in Availability Zone A.
+    Type: String
+    Default: 10.2.0.0/24
+
+  SharedServicesVPCPublicSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the public subnet in Availability Zone B.
+    Type: String
+    Default: 10.2.1.0/24
+
+  SharedServicesVPCPrivateSubnet1CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the private subnet in Availability Zone A.
+    Type: String
+    Default: 10.2.2.0/24
+
+  SharedServicesVPCPrivateSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the private subnet in Availability Zone B.
+    Type: String
+    Default: 10.2.3.0/24
+
+  SharedServicesVPCTGWSubnet1CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the private subnet in Availability Zone A.
+    Type: String
+    Default: 10.2.4.0/24
+
+  SharedServicesVPCTGWSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the private subnet in Availability Zone B.
+    Type: String
+    Default: 10.2.5.0/24
+
+
+  ApplicationVPCTGWSubnet1CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the public subnet in Availability Zone A.
+    Type: String
+    Default: 10.3.0.0/24
+
+  ApplicationVPCTGWSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the public subnet in Availability Zone B.
+    Type: String
+    Default: 10.3.1.0/24
+
+  ApplicationVPCPrivateSubnet1CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the private subnet in Availability Zone A.
+    Type: String
+    Default: 10.3.2.0/24
+
+  ApplicationVPCPrivateSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the private subnet in Availability Zone B.
+    Type: String
+    Default: 10.3.3.0/24
+
+  ApplicationVPCPublicSubnet1CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the private subnet in Availability Zone A.
+    Type: String
+    Default: 10.3.4.0/24
+
+  ApplicationVPCPublicSubnet2CIDR:
+    AllowedPattern: "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$"
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: Please enter the IPv4 range (CIDR notation) for the private subnet in Availability Zone B.
+    Type: String
+    Default: 10.3.5.0/24
+
+  AMIId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+    Description: Enter the Amazon Linux 2 AMI (HVM) ID. If CFN is launched in ap-southeast-1 (Singapore) region, leave it to default values.
+
+Resources:
+  ################# Create three VPCs
+  ServiceProviderVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref ServiceProviderVPCCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Ref ServiceProviderVPCName
+
+  SharedServicesVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref SharedServicesVPCCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Ref SharedServicesVPCName
+
+  ApplicationVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref ApplicationVPCCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Ref ApplicationVPCName
+
+
+  ############# Convert Shared Services VPC and Application VPC to Dual-stack.
+  SharedServicesVPCIPv6CidrBlock:
+    Type: AWS::EC2::VPCCidrBlock
+    Properties:
+      AmazonProvidedIpv6CidrBlock: true
+      VpcId: !Ref SharedServicesVPC
+
+
+  ApplicationVPCIPv6CidrBlock:
+    Type: AWS::EC2::VPCCidrBlock
+    Properties:
+      AmazonProvidedIpv6CidrBlock: true
+      VpcId: !Ref ApplicationVPC
+
+  ######## Create Internet Gateways and attachments for all 3 VPCs
+  ServiceProviderVPCInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub '${ServiceProviderVPCName} IGW'
+
+  ServiceProviderVPCInternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref ServiceProviderVPCInternetGateway
+      VpcId: !Ref ServiceProviderVPC
+    DependsOn: ServiceProviderVPC
+
+  SharedServicesVPCInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub '${SharedServicesVPCName} IGW'
+
+  SharedServicesVPCInternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref SharedServicesVPCInternetGateway
+      VpcId: !Ref SharedServicesVPC
+    DependsOn: SharedServicesVPC
+
+  ApplicationVPCInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub '${ApplicationVPCName} IGW'
+
+  ApplicationVPCInternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref ApplicationVPCInternetGateway
+      VpcId: !Ref ApplicationVPC
+    DependsOn: ApplicationVPC
+
+  ##################### Create Egress-only Internet Gateway for SharedServicesVPC
+  SharedServicesVPCEIGW:
+    Type: AWS::EC2::EgressOnlyInternetGateway
+    Properties:
+      VpcId: !Ref SharedServicesVPC
+
+  ApplicationVPCEIGW:
+    Type: AWS::EC2::EgressOnlyInternetGateway
+    Properties:
+      VpcId: !Ref ApplicationVPC
+
+  ################# Create subnets for all 3 VPCs
+  #########Service Provider VPC - 2 Public, 2 Private##########
+  ServiceProviderVPCPublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ServiceProviderVPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: !Ref ServiceProviderVPCPublicSubnet1CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${ServiceProviderVPCName} Public Subnet AZA
+
+  ServiceProviderVPCPublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ServiceProviderVPC
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      CidrBlock: !Ref ServiceProviderVPCPublicSubnet2CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${ServiceProviderVPCName} Public Subnet AZB
+
+  ServiceProviderVPCPrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ServiceProviderVPC
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: !Ref ServiceProviderVPCPrivateSubnet1CIDR
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${ServiceProviderVPCName} Private IPv4 Subnet AZA
+
+  ServiceProviderVPCPrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ServiceProviderVPC
+      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
+      CidrBlock: !Ref ServiceProviderVPCPrivateSubnet2CIDR
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${ServiceProviderVPCName} Private IPv4 Subnet AZB
+
+
+  ##########Shared Services VPC - 2 Public DS, 2 Private DS, ##########
+  SharedServicesVPCPublicSubnet1:
+    Type: AWS::EC2::Subnet
+    DependsOn: SharedServicesVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref SharedServicesVPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: !Ref SharedServicesVPCPublicSubnet1CIDR
+      Ipv6CidrBlock: !Select [ 0, !Cidr [ !Select [ 0, !GetAtt SharedServicesVPC.Ipv6CidrBlocks ], 1, 64 ] ]
+      MapPublicIpOnLaunch: true
+      EnableDns64: true
+      #PrivateDnsNameOptionsOnLaunch: !Sub {"EnableResourceNameDnsAAAARecord":"true","EnableResourceNameDnsARecord":"true"}
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} Dual-Stack Public Subnet AZA
+
+  SharedServicesVPCPublicSubnet2:
+    Type: AWS::EC2::Subnet
+    DependsOn: SharedServicesVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref SharedServicesVPC
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      CidrBlock: !Ref SharedServicesVPCPublicSubnet2CIDR
+      Ipv6CidrBlock: !Select [ 1, !Cidr [ !Select [ 0, !GetAtt SharedServicesVPC.Ipv6CidrBlocks ], 2, 64 ] ]
+      MapPublicIpOnLaunch: true
+      EnableDns64: true
+      #PrivateDnsNameOptionsOnLaunch: !Sub {"EnableResourceNameDnsAAAARecord":"true","EnableResourceNameDnsARecord":"true"}
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} Dual-Stack Public Subnet AZB
+
+  SharedServicesVPCPrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    DependsOn: SharedServicesVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref SharedServicesVPC
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: !Ref SharedServicesVPCPrivateSubnet1CIDR
+      Ipv6CidrBlock: !Select [ 2, !Cidr [ !Select [ 0, !GetAtt SharedServicesVPC.Ipv6CidrBlocks ], 3, 64 ] ]
+      MapPublicIpOnLaunch: false
+      EnableDns64: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} Dual-Stack Private Subnet AZA
+
+  SharedServicesVPCPrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    DependsOn: SharedServicesVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref SharedServicesVPC
+      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
+      CidrBlock: !Ref SharedServicesVPCPrivateSubnet2CIDR
+      Ipv6CidrBlock: !Select [ 3, !Cidr [ !Select [ 0, !GetAtt SharedServicesVPC.Ipv6CidrBlocks ], 4, 64 ] ]
+      MapPublicIpOnLaunch: false
+      EnableDns64: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} Dual-Stack Private Subnet AZB
+
+  #Shared Services VPC TGW Subnets:
+
+  SharedServicesVPCTGWSubnet1:
+    Type: AWS::EC2::Subnet
+    DependsOn: SharedServicesVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref SharedServicesVPC
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: !Ref SharedServicesVPCTGWSubnet1CIDR
+      Ipv6CidrBlock: !Select [ 4, !Cidr [ !Select [ 0, !GetAtt SharedServicesVPC.Ipv6CidrBlocks ], 5, 64 ] ]
+      AssignIpv6AddressOnCreation: true
+      MapPublicIpOnLaunch: false
+      EnableDns64: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} Dual-Stack TGW Subnet AZA
+
+  SharedServicesVPCTGWSubnet2:
+    Type: AWS::EC2::Subnet
+    DependsOn: SharedServicesVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref SharedServicesVPC
+      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
+      CidrBlock: !Ref SharedServicesVPCTGWSubnet2CIDR
+      Ipv6CidrBlock: !Select [ 5, !Cidr [ !Select [ 0, !GetAtt SharedServicesVPC.Ipv6CidrBlocks ], 6, 64 ] ]
+      AssignIpv6AddressOnCreation: true
+      MapPublicIpOnLaunch: false
+      EnableDns64: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} Dual-Stack TGW Subnet AZB
+
+
+  ##########Application VPC - 2 Public DS, 2 Private DS, ##########
+
+  #Application VPC TGW Subnets:
+  ApplicationVPCTGWSubnet1:
+    Type: AWS::EC2::Subnet
+    DependsOn: ApplicationVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref ApplicationVPC
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: !Ref ApplicationVPCTGWSubnet1CIDR
+      Ipv6CidrBlock: !Select [ 0, !Cidr [ !Select [ 0, !GetAtt ApplicationVPC.Ipv6CidrBlocks ], 1, 64 ] ]
+      MapPublicIpOnLaunch: false
+      AssignIpv6AddressOnCreation: true
+      EnableDns64: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} Dual-Stack TGW Subnet AZA
+
+  ApplicationVPCTGWSubnet2:
+    Type: AWS::EC2::Subnet
+    DependsOn: ApplicationVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref ApplicationVPC
+      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
+      CidrBlock: !Ref ApplicationVPCTGWSubnet2CIDR
+      Ipv6CidrBlock: !Select [ 1, !Cidr [ !Select [ 0, !GetAtt ApplicationVPC.Ipv6CidrBlocks ], 2, 64 ] ]
+      MapPublicIpOnLaunch: false
+      AssignIpv6AddressOnCreation: true
+      EnableDns64: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} Dual-Stack TGW Subnet AZB
+
+  ApplicationVPCPrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    DependsOn: ApplicationVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref ApplicationVPC
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: !Ref ApplicationVPCPrivateSubnet1CIDR
+      Ipv6CidrBlock: !Select [ 2, !Cidr [ !Select [ 0, !GetAtt ApplicationVPC.Ipv6CidrBlocks ], 3, 64 ] ]
+      MapPublicIpOnLaunch: false
+      AssignIpv6AddressOnCreation: true
+      EnableDns64: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} Dual-Stack Private Subnet AZA
+
+  ApplicationVPCPrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    DependsOn: ApplicationVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref ApplicationVPC
+      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
+      CidrBlock: !Ref ApplicationVPCPrivateSubnet2CIDR
+      Ipv6CidrBlock: !Select [ 3, !Cidr [ !Select [ 0, !GetAtt ApplicationVPC.Ipv6CidrBlocks ], 4, 64 ] ]
+      MapPublicIpOnLaunch: false
+      AssignIpv6AddressOnCreation: true
+      EnableDns64: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} Dual-Stack Private Subnet AZB
+
+  ApplicationVPCPublicSubnet1:
+      Type: AWS::EC2::Subnet
+      DependsOn: ApplicationVPCIPv6CidrBlock
+      Properties:
+        VpcId: !Ref ApplicationVPC
+        AvailabilityZone: !Select [ 0, !GetAZs '' ]
+        CidrBlock: !Ref ApplicationVPCPublicSubnet1CIDR
+        Ipv6CidrBlock: !Select [ 4, !Cidr [ !Select [ 0, !GetAtt ApplicationVPC.Ipv6CidrBlocks ], 5, 64 ] ]
+        MapPublicIpOnLaunch: true
+        EnableDns64: true
+        #PrivateDnsNameOptionsOnLaunch: !Sub {"EnableResourceNameDnsAAAARecord":"true","EnableResourceNameDnsARecord":"true"}
+        Tags:
+          - Key: Name
+            Value: !Sub ${ApplicationVPCName} Dual-Stack Public Subnet AZA
+
+  ApplicationVPCPublicSubnet2:
+    Type: AWS::EC2::Subnet
+    DependsOn: ApplicationVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref ApplicationVPC
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      CidrBlock: !Ref ApplicationVPCPublicSubnet2CIDR
+      Ipv6CidrBlock: !Select [ 5, !Cidr [ !Select [ 0, !GetAtt ApplicationVPC.Ipv6CidrBlocks ], 6, 64 ] ]
+      MapPublicIpOnLaunch: true
+      EnableDns64: true
+      #PrivateDnsNameOptionsOnLaunch: !Sub {"EnableResourceNameDnsAAAARecord":"true","EnableResourceNameDnsARecord":"true"}
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} Dual-Stack Public Subnet AZB
+
+
+
+  ############ Create IPv6 only subnets in Shared Services VPC and Application VPC
+  SharedServicesVPCIPv6OnlyPrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    DependsOn: SharedServicesVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref SharedServicesVPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      Ipv6Native: true
+      Ipv6CidrBlock: !Select [ 6, !Cidr [ !Select [ 0, !GetAtt SharedServicesVPC.Ipv6CidrBlocks ], 7, 64 ] ]
+      AssignIpv6AddressOnCreation: true
+      EnableDns64: true
+      #PrivateDnsNameOptionsOnLaunch: !Sub {"EnableResourceNameDnsAAAARecord":"true","EnableResourceNameDnsARecord":"true"}
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} Private IPv6 Subnet AZA
+
+  SharedServicesVPCIPv6OnlyPrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    DependsOn: SharedServicesVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref SharedServicesVPC
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      Ipv6Native: true
+      Ipv6CidrBlock: !Select [ 7, !Cidr [ !Select [ 0, !GetAtt SharedServicesVPC.Ipv6CidrBlocks ], 8, 64 ] ]
+      AssignIpv6AddressOnCreation: true
+      EnableDns64: true
+      #PrivateDnsNameOptionsOnLaunch: !Sub {"EnableResourceNameDnsAAAARecord":"true","EnableResourceNameDnsARecord":"true"}
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} Private IPv6 Subnet AZB
+
+  ApplicationVPCIPv6OnlyPrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    DependsOn: ApplicationVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref ApplicationVPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      Ipv6Native: true
+      Ipv6CidrBlock: !Select [ 6, !Cidr [ !Select [ 0, !GetAtt ApplicationVPC.Ipv6CidrBlocks ], 7, 64 ] ]
+      AssignIpv6AddressOnCreation: true
+      EnableDns64: true
+      #PrivateDnsNameOptionsOnLaunch: !Sub {"EnableResourceNameDnsAAAARecord":"true","EnableResourceNameDnsARecord":"true"}
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} Private IPv6 Subnet AZA
+
+  ApplicationVPCIPv6OnlyPrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    DependsOn: ApplicationVPCIPv6CidrBlock
+    Properties:
+      VpcId: !Ref ApplicationVPC
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      Ipv6Native: true
+      Ipv6CidrBlock: !Select [ 7, !Cidr [ !Select [ 0, !GetAtt ApplicationVPC.Ipv6CidrBlocks ], 8, 64 ] ]
+      AssignIpv6AddressOnCreation: true
+      EnableDns64: true
+      #PrivateDnsNameOptionsOnLaunch: !Sub {"EnableResourceNameDnsAAAARecord":"true","EnableResourceNameDnsARecord":"true"}
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} Private IPv6 Subnet AZB
+
+
+    ####### Create NAT Gateways
+  ServiceProviderVPCNatGateway1EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Sub ${ServiceProviderVPCName} NGW EIP AZA
+
+
+  ServiceProviderVPCNatGateway1:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt ServiceProviderVPCNatGateway1EIP.AllocationId
+      SubnetId: !Ref ServiceProviderVPCPublicSubnet1
+      Tags:
+        - Key: Name
+          Value: !Sub ${ServiceProviderVPCName} NGW AZA
+
+
+  ServiceProviderVPCNatGateway2EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Sub ${ServiceProviderVPCName} NGW EIP AZB
+
+  ServiceProviderVPCNatGateway2:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt ServiceProviderVPCNatGateway2EIP.AllocationId
+      SubnetId: !Ref ServiceProviderVPCPublicSubnet2
+      Tags:
+        - Key: Name
+          Value: !Sub ${ServiceProviderVPCName} NGW AZB
+
+  SharedServicesVPCNatGateway1EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} NGW EIP AZA
+
+  SharedServicesVPCNatGateway1:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt SharedServicesVPCNatGateway1EIP.AllocationId
+      SubnetId: !Ref SharedServicesVPCPublicSubnet1
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} NGW AZA
+
+##Application VPC nat gateways
+  ApplicationVPCNatGateway1EIP:
+      Type: AWS::EC2::EIP
+      Properties:
+        Domain: vpc
+        Tags:
+          - Key: Name
+            Value: !Sub ${ApplicationVPCName} NGW EIP AZA
+
+  ApplicationVPCNatGateway1:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt ApplicationVPCNatGateway1EIP.AllocationId
+      SubnetId: !Ref ApplicationVPCPublicSubnet1
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} NGW AZA
+
+    ################# Create Route Tables
+  ServiceProviderVPCPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    DependsOn: ServiceProviderVPCInternetGatewayAttachment
+    Properties:
+      VpcId: !Ref ServiceProviderVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ServiceProviderVPCName} Public Route Table
+
+  SharedServicesVPCPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    DependsOn: SharedServicesVPCInternetGatewayAttachment
+    Properties:
+      VpcId: !Ref SharedServicesVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} Public Route Table
+
+  ApplicationVPCPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    DependsOn: ApplicationVPCInternetGatewayAttachment
+    Properties:
+      VpcId: !Ref ApplicationVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} Public Route Table
+
+  ServiceProviderVPCPrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ServiceProviderVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ServiceProviderVPCName} Private Route Table AZA
+
+  ServiceProviderVPCPrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ServiceProviderVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ServiceProviderVPCName} Private Route Table AZB
+
+  SharedServicesVPCPrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref SharedServicesVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} Private Route Table AZA
+
+  SharedServicesVPCPrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref SharedServicesVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} Private Route Table AZB
+
+  ApplicationVPCTGWRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ApplicationVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} TGW Route Table AZA
+
+  ApplicationVPCTGWRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ApplicationVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} TGW Route Table AZB
+
+  ApplicationVPCLoadBalancerRouteTable3:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ApplicationVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} Load Balancer Route Table AZA
+
+  ApplicationVPCLoadBalancerRouteTable4:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ApplicationVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} Load Balancer Route Table AZB
+
+  SharedServicesVPCIPv6onlyPrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref SharedServicesVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} IPv6-only subnet Private Route Table AZA
+
+  SharedServicesVPCIPv6onlyPrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref SharedServicesVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${SharedServicesVPCName} IPv6-only subnet Private Route Table AZB
+
+  ApplicationVPCIPv6onlyPrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ApplicationVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} IPv6-only subnet Private Route Table AZA
+
+  ApplicationVPCIPv6onlyPrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref ApplicationVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ApplicationVPCName} IPv6-only subnet Private Route Table AZB
+
+
+    ################# Create Routes and Associations
+  ServiceProviderVPCIGWRoute:
+    Type: AWS::EC2::Route
+    DependsOn: ServiceProviderVPCPublicRouteTable
+    Properties:
+      RouteTableId: !Ref ServiceProviderVPCPublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref ServiceProviderVPCInternetGateway
+
+  ServiceProviderVPCPublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref ServiceProviderVPCPublicRouteTable
+      SubnetId: !Ref ServiceProviderVPCPublicSubnet1
+
+  ServiceProviderVPCPublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref ServiceProviderVPCPublicRouteTable
+      SubnetId: !Ref ServiceProviderVPCPublicSubnet2
+
+  ServiceProviderVPCPrivateSubnet1Route:
+    Type: AWS::EC2::Route
+    DependsOn: ServiceProviderVPCPrivateRouteTable1
+    Properties:
+      RouteTableId: !Ref ServiceProviderVPCPrivateRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref ServiceProviderVPCNatGateway1
+
+  ServiceProviderVPCPrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref ServiceProviderVPCPrivateRouteTable1
+      SubnetId: !Ref ServiceProviderVPCPrivateSubnet1
+
+  ServiceProviderVPCPrivateSubnet2Route:
+    Type: AWS::EC2::Route
+    DependsOn: ServiceProviderVPCPrivateRouteTable2
+    Properties:
+      RouteTableId: !Ref ServiceProviderVPCPrivateRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref ServiceProviderVPCNatGateway2
+
+  ServiceProviderVPCPrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref ServiceProviderVPCPrivateRouteTable2
+      SubnetId: !Ref ServiceProviderVPCPrivateSubnet2
+
+  SharedServicesVPCIGWRoute:
+    Type: AWS::EC2::Route
+    DependsOn: SharedServicesVPCPublicRouteTable
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCPublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref SharedServicesVPCInternetGateway
+
+  SharedServicesVPCEIGWRoute:
+    Type: AWS::EC2::Route
+    DependsOn: SharedServicesVPCPublicRouteTable
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCPublicRouteTable
+      DestinationIpv6CidrBlock: ::/0
+      GatewayId: !Ref SharedServicesVPCInternetGateway
+
+  SharedServicesVPCPublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCPublicRouteTable
+      SubnetId: !Ref SharedServicesVPCPublicSubnet1
+
+  SharedServicesVPCPublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCPublicRouteTable
+      SubnetId: !Ref SharedServicesVPCPublicSubnet2
+
+  SharedServicesVPCPrivateSubnet1Route1:
+    Type: AWS::EC2::Route
+    DependsOn: SharedServicesVPCPrivateRouteTable1
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCPrivateRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref SharedServicesVPCNatGateway1
+
+  SharedServicesVPCPrivateSubnet1Route2:
+    Type: AWS::EC2::Route
+    DependsOn: SharedServicesVPCPrivateRouteTable1
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCPrivateRouteTable1
+      DestinationIpv6CidrBlock: ::/0
+      EgressOnlyInternetGatewayId: !Ref SharedServicesVPCEIGW
+
+  SharedServicesVPCPrivateSubnet1Route3:
+    Type: AWS::EC2::Route
+    DependsOn: SharedServicesVPCPrivateRouteTable1
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCPrivateRouteTable1
+      DestinationIpv6CidrBlock: 64:ff9b::/96
+      NatGatewayId: !Ref SharedServicesVPCNatGateway1
+
+  SharedServicesVPCPrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCPrivateRouteTable1
+      SubnetId: !Ref SharedServicesVPCPrivateSubnet1
+
+  SharedServicesVPCPrivateSubnet2Route1:
+    Type: AWS::EC2::Route
+    DependsOn: SharedServicesVPCPrivateRouteTable2
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCPrivateRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref SharedServicesVPCNatGateway1
+
+  SharedServicesVPCPrivateSubnet2Route2:
+    Type: AWS::EC2::Route
+    DependsOn: SharedServicesVPCPrivateRouteTable2
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCPrivateRouteTable2
+      DestinationIpv6CidrBlock: ::/0
+      EgressOnlyInternetGatewayId: !Ref SharedServicesVPCEIGW
+
+  SharedServicesVPCPrivateSubnet2Route3:
+    Type: AWS::EC2::Route
+    DependsOn: SharedServicesVPCPrivateRouteTable2
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCPrivateRouteTable2
+      DestinationIpv6CidrBlock: 64:ff9b::/96
+      NatGatewayId: !Ref SharedServicesVPCNatGateway1
+
+  SharedServicesVPCPrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCPrivateRouteTable2
+      SubnetId: !Ref SharedServicesVPCPrivateSubnet2
+
+  SharedServicesVPCIPv6onlyPrivateSubnet1Route1:
+    Type: AWS::EC2::Route
+    DependsOn: SharedServicesVPCIPv6onlyPrivateRouteTable1
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCIPv6onlyPrivateRouteTable1
+      DestinationIpv6CidrBlock: ::/0
+      EgressOnlyInternetGatewayId: !Ref SharedServicesVPCEIGW
+
+  SharedServicesVPCIPv6onlyPrivateSubnet1Route2:
+    Type: AWS::EC2::Route
+    DependsOn: SharedServicesVPCIPv6onlyPrivateRouteTable1
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCIPv6onlyPrivateRouteTable1
+      DestinationIpv6CidrBlock: 64:ff9b::/96
+      NatGatewayId: !Ref SharedServicesVPCNatGateway1
+
+  SharedServicesVPCIPv6onlyPrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCIPv6onlyPrivateRouteTable1
+      SubnetId: !Ref SharedServicesVPCIPv6OnlyPrivateSubnet1
+
+  SharedServicesVPCIPv6onlyPrivateSubnet2Route1:
+    Type: AWS::EC2::Route
+    DependsOn: SharedServicesVPCIPv6onlyPrivateRouteTable2
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCIPv6onlyPrivateRouteTable2
+      DestinationIpv6CidrBlock: ::/0
+      EgressOnlyInternetGatewayId: !Ref SharedServicesVPCEIGW
+
+  SharedServicesVPCIPv6onlyPrivateSubnet2Route2:
+    Type: AWS::EC2::Route
+    DependsOn: SharedServicesVPCIPv6onlyPrivateRouteTable2
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCIPv6onlyPrivateRouteTable2
+      DestinationIpv6CidrBlock: 64:ff9b::/96
+      NatGatewayId: !Ref SharedServicesVPCNatGateway1
+
+  SharedServicesVPCIPv6onlyPrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SharedServicesVPCIPv6onlyPrivateRouteTable2
+      SubnetId: !Ref SharedServicesVPCIPv6OnlyPrivateSubnet2
+
+##Application VPC public subnets###
+  ApplicationVPCIGWRoute:
+    Type: AWS::EC2::Route
+    DependsOn: ApplicationVPCPublicRouteTable
+    Properties:
+      RouteTableId: !Ref ApplicationVPCPublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref ApplicationVPCInternetGateway
+
+  ApplicationVPCEIGWRoute:
+    Type: AWS::EC2::Route
+    DependsOn: ApplicationVPCPublicRouteTable
+    Properties:
+      RouteTableId: !Ref ApplicationVPCPublicRouteTable
+      DestinationIpv6CidrBlock: ::/0
+      GatewayId: !Ref ApplicationVPCInternetGateway
+
+  ApplicationVPCPublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref ApplicationVPCPublicRouteTable
+      SubnetId: !Ref ApplicationVPCPublicSubnet1
+
+  ApplicationVPCPublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref ApplicationVPCPublicRouteTable
+      SubnetId: !Ref ApplicationVPCPublicSubnet2
+
+  ApplicationVPCTGWSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref ApplicationVPCTGWRouteTable1
+      SubnetId: !Ref ApplicationVPCTGWSubnet1
+
+  ApplicationVPCTGWSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref ApplicationVPCTGWRouteTable2
+      SubnetId: !Ref ApplicationVPCTGWSubnet2
+
+  ApplicationVPCLoadBalancerSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref ApplicationVPCLoadBalancerRouteTable3
+      SubnetId: !Ref ApplicationVPCPrivateSubnet1
+
+  ApplicationVPCLoadBalancerSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref ApplicationVPCLoadBalancerRouteTable4
+      SubnetId: !Ref ApplicationVPCPrivateSubnet2
+
+  ApplicationVPCIPv6onlyPrivateSubnet1Route1:
+    Type: AWS::EC2::Route
+    DependsOn: ApplicationVPCIPv6onlyPrivateRouteTable1
+    Properties:
+      RouteTableId: !Ref ApplicationVPCIPv6onlyPrivateRouteTable1
+      DestinationIpv6CidrBlock: ::/0
+      EgressOnlyInternetGatewayId: !Ref ApplicationVPCEIGW
+
+  ApplicationVPCIPv6onlyPrivateSubnet1Route2:
+    Type: AWS::EC2::Route
+    DependsOn: ApplicationVPCIPv6onlyPrivateRouteTable1
+    Properties:
+      RouteTableId: !Ref ApplicationVPCIPv6onlyPrivateRouteTable1
+      DestinationIpv6CidrBlock: 64:ff9b::/96
+      NatGatewayId: !Ref ApplicationVPCNatGateway1
+
+  ApplicationVPCIPv6onlyPrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref ApplicationVPCIPv6onlyPrivateRouteTable1
+      SubnetId: !Ref ApplicationVPCIPv6OnlyPrivateSubnet1
+
+  ApplicationVPCIPv6onlyPrivateSubnet2Route1:
+    Type: AWS::EC2::Route
+    DependsOn: ApplicationVPCIPv6onlyPrivateRouteTable2
+    Properties:
+      RouteTableId: !Ref ApplicationVPCIPv6onlyPrivateRouteTable2
+      DestinationIpv6CidrBlock: ::/0
+      EgressOnlyInternetGatewayId: !Ref ApplicationVPCEIGW
+
+  ApplicationVPCIPv6onlyPrivateSubnet2Route2:
+    Type: AWS::EC2::Route
+    DependsOn: ApplicationVPCIPv6onlyPrivateRouteTable2
+    Properties:
+      RouteTableId: !Ref ApplicationVPCIPv6onlyPrivateRouteTable2
+      DestinationIpv6CidrBlock: 64:ff9b::/96
+      NatGatewayId: !Ref ApplicationVPCNatGateway1
+
+  ApplicationVPCIPv6onlyPrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref ApplicationVPCIPv6onlyPrivateRouteTable2
+      SubnetId: !Ref ApplicationVPCIPv6OnlyPrivateSubnet2
+
+
+  ################# Create IAM Role for SSM
+  # IAMRoleForEC2:
+  #   Type: "AWS::IAM::Role"
+  #   Properties:
+  #     Path: "/"
+  #     RoleName: !Sub IAM_Role_for_SSM_Connectivity_${AWS::StackName}
+  #     AssumeRolePolicyDocument: "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}"
+  #     MaxSessionDuration: 3600
+  #     ManagedPolicyArns:
+  #       - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  #     Description: "Allows EC2 instances to call AWS SSM services on your behalf."
+
+  ################# Create IAM Instance Profile for SSM
+  # IAMInstanceProfile:
+  #   Type: "AWS::IAM::InstanceProfile"
+  #   Properties:
+  #     Path: "/"
+  #     InstanceProfileName: !Sub IAM_Role_for_SSM_Connectivity_${AWS::StackName}
+  #     Roles:
+  #       - !Ref IAMRoleForEC2
+
+  ################# Create Security Group for SSM Interface Endpoint
+  SSMEndpointSecurityGroupVPCA:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "This SG allows all Outbound connections Inbound TCP connections on port 80 from Service Provider VPC CIDR"
+      GroupName: !Sub ${ServiceProviderVPCName} SSM Interface Endpoint SG
+      VpcId: !Ref ServiceProviderVPC
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: !Ref ServiceProviderVPCCIDR
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+
+  SSMEndpointSecurityGroupSharedServicesVPC:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "This SG allows Inbound TCP connections on port 80 from Shared Services VPC IPv4 and IPv6 CIDR"
+      GroupName: !Sub ${SharedServicesVPCName} SSM and PrivateLink Endpoint SG
+      VpcId: !Ref SharedServicesVPC
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+        - CidrIpv6: "::/0"
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: !Ref SharedServicesVPCCIDR
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+        - CidrIp: !Ref SharedServicesVPCCIDR
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+        - CidrIpv6: "::/0"
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+        - CidrIpv6: "::/0"
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+  #Application VPC
+  SSMEndpointSecurityGroupApplicationVPC:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "This SG allows Inbound TCP connections on port 80 from Application VPC IPv4 and IPv6 CIDR"
+      GroupName: !Sub ${ApplicationVPCName} SSM and PrivateLink Endpoint SG
+      VpcId: !Ref ApplicationVPC
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+        - CidrIpv6: "::/0"
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: !Ref ApplicationVPCCIDR
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+        - CidrIp: !Ref ApplicationVPCCIDR
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+        - CidrIpv6: "::/0"
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+        - CidrIpv6: "::/0"
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+  ################# Create Security Group for EC2 Instance in Service Provider VPC
+  IPv4EC2InstanceSecurityGroupVPCA:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "This SG allows all IPv4 outbound connections and incoming HTTP connections"
+      GroupName: !Sub ${ServiceProviderVPCName} IPv4 EC2 Instance SG
+      VpcId: !Ref ServiceProviderVPC
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: !Ref ServiceProviderVPCCIDR
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+
+  ################# Create Security Group for IPv6 EC2 Instance in Service Provider VPC
+  IPv6EC2InstanceSecurityGroupVPCA:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "This SG allows all IPv6 outbound connections and incoming connections on TCP port 80"
+      GroupName: !Sub ${ServiceProviderVPCName} IPv6 EC2 Instance SG
+      VpcId: !Ref ServiceProviderVPC
+      SecurityGroupEgress:
+        - CidrIpv6: "::/0"
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIpv6: "::/0"
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+
+  ################# Create Security Group for IPv6 EC2 Instance in Shared Services VPC
+  IPv6EC2InstanceSecurityGroupSharedServicesVPC:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "This SG allows all IPv6 outbound connections and blocks all incoming connections"
+      GroupName: !Sub ${SharedServicesVPCName} IPv6 EC2 Instance SG
+      VpcId: !Ref SharedServicesVPC
+      SecurityGroupEgress:
+        - CidrIpv6: "::/0"
+          IpProtocol: "-1"
+
+  ################# Create Security Group for IPv6 EC2 Instance in Application VPC
+  IPv6EC2InstanceSecurityGroupApplicationVPC:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "This SG allows all IPv6 outbound connections and blocks all incoming connections"
+      GroupName: !Sub ${ApplicationVPCName} IPv6 EC2 Instance SG
+      VpcId: !Ref ApplicationVPC
+      SecurityGroupEgress:
+        - CidrIpv6: "::/0"
+          IpProtocol: "-1"
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIpv6: "::/0"
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+
+
+  ################# Create SSM Interface Endpoint
+  SSMInterfaceEndpointVPCA:
+    Type: "AWS::EC2::VPCEndpoint"
+    Properties:
+      VpcEndpointType: "Interface"
+      VpcId: !Ref ServiceProviderVPC
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.ssm"
+      PolicyDocument: |
+        {
+          "Statement": [
+            {
+              "Action": "*", 
+              "Effect": "Allow", 
+              "Principal": "*", 
+              "Resource": "*"
+            }
+          ]
+        }
+      SubnetIds:
+        - !Ref ServiceProviderVPCPublicSubnet1
+        - !Ref ServiceProviderVPCPublicSubnet2
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !Ref SSMEndpointSecurityGroupVPCA
+
+  SSMInterfaceEndpointSharedServicesVPC:
+    Type: "AWS::EC2::VPCEndpoint"
+    Properties:
+      VpcEndpointType: "Interface"
+      VpcId: !Ref SharedServicesVPC
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.ssm"
+      PolicyDocument: |
+        {
+          "Statement": [
+            {
+              "Action": "*", 
+              "Effect": "Allow", 
+              "Principal": "*", 
+              "Resource": "*"
+            }
+          ]
+        }
+      SubnetIds:
+        - !Ref SharedServicesVPCPrivateSubnet1
+        - !Ref SharedServicesVPCPrivateSubnet2
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !Ref SSMEndpointSecurityGroupSharedServicesVPC
+
+  #Application VPC
+
+  SSMInterfaceEndpointApplicationVPC:
+    Type: "AWS::EC2::VPCEndpoint"
+    Properties:
+      VpcEndpointType: "Interface"
+      VpcId: !Ref ApplicationVPC
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.ssm"
+      PolicyDocument: |
+        {
+          "Statement": [
+            {
+              "Action": "*", 
+              "Effect": "Allow", 
+              "Principal": "*", 
+              "Resource": "*"
+            }
+          ]
+        }
+      SubnetIds:
+        - !Ref ApplicationVPCPrivateSubnet1
+        - !Ref ApplicationVPCPrivateSubnet2
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !Ref SSMEndpointSecurityGroupApplicationVPC
+
+  ################# Launch EC2 Instance in Private Subnets in Service Provider VPC
+  EC2InstanceAZA:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: "t2.micro"
+      ImageId: !Ref AMIId
+      Tenancy: "default"
+      SubnetId: !Ref ServiceProviderVPCPrivateSubnet1
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      # IamInstanceProfile: !Ref IAMInstanceProfile
+      IamInstanceProfile: LabInstanceProfile
+      SecurityGroupIds:
+        - !Ref IPv4EC2InstanceSecurityGroupVPCA
+      Tags:
+        - Key: "Name"
+          Value: "Service Provider VPC IPv4 EC2 Instance AZA"
+      BlockDeviceMappings:
+        - DeviceName: "/dev/xvda"
+          Ebs:
+            Encrypted: false
+            VolumeSize: 8
+            VolumeType: "gp2"
+            DeleteOnTermination: true
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum -y update
+          yum -y install httpd
+          yum -y install php
+          printf "<?php\n\$ip = array(\"ip\"=>\$_SERVER['REMOTE_ADDR'], \"x-forwarded-for\"=>\$_SERVER['HTTP_X_FORWARDED_FOR']);\necho json_encode(\$ip);\n?>\n"> /var/www/html/index.php
+          systemctl enable httpd
+          systemctl start httpd
+
+  EC2InstanceAZB:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: "t2.micro"
+      ImageId: !Ref AMIId
+      Tenancy: "default"
+      SubnetId: !Ref ServiceProviderVPCPrivateSubnet2
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      # IamInstanceProfile: !Ref IAMInstanceProfile
+      IamInstanceProfile: LabInstanceProfile
+      SecurityGroupIds:
+        - !Ref IPv4EC2InstanceSecurityGroupVPCA
+      Tags:
+        - Key: "Name"
+          Value: "Service Provider VPC IPv4 EC2 Instance AZB"
+      BlockDeviceMappings:
+        - DeviceName: "/dev/xvda"
+          Ebs:
+            Encrypted: false
+            VolumeSize: 8
+            VolumeType: "gp2"
+            DeleteOnTermination: true
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum -y update
+          yum -y install httpd
+          yum -y install php
+          printf "<?php\n\$ip = array(\"ip\"=>\$_SERVER['REMOTE_ADDR'], \"x-forwarded-for\"=>\$_SERVER['HTTP_X_FORWARDED_FOR']);\necho json_encode(\$ip);\n?>\n"> /var/www/html/index.php
+          systemctl enable httpd
+          systemctl start httpd
+
+  ################# Launch EC2 Instances in IPv6 only Private Subnets in Shared Services VPC
+  SharedServicesVPCIPv6EC2InstanceAZA:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: "t3.micro"
+      ImageId: !Ref AMIId
+      Tenancy: "default"
+      SubnetId: !Ref SharedServicesVPCIPv6OnlyPrivateSubnet1
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      # IamInstanceProfile: !Ref IAMInstanceProfile
+      IamInstanceProfile: LabInstanceProfile
+      SecurityGroupIds:
+        - !Ref IPv6EC2InstanceSecurityGroupSharedServicesVPC
+      Tags:
+        - Key: "Name"
+          Value: "Shared Services VPC IPv6-only EC2 Instance AZA"
+      BlockDeviceMappings:
+        - DeviceName: "/dev/xvda"
+          Ebs:
+            Encrypted: false
+            VolumeSize: 8
+            VolumeType: "gp2"
+            DeleteOnTermination: true
+
+  SharedServicesVPCIPv6EC2InstanceAZB:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: "t3.micro"
+      ImageId: !Ref AMIId
+      Tenancy: "default"
+      SubnetId: !Ref SharedServicesVPCIPv6OnlyPrivateSubnet2
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      # IamInstanceProfile: !Ref IAMInstanceProfile
+      IamInstanceProfile: LabInstanceProfile
+      SecurityGroupIds:
+        - !Ref IPv6EC2InstanceSecurityGroupSharedServicesVPC
+      Tags:
+        - Key: "Name"
+          Value: "Shared Services VPC IPv6-only EC2 Instance AZB"
+      BlockDeviceMappings:
+        - DeviceName: "/dev/xvda"
+          Ebs:
+            Encrypted: false
+            VolumeSize: 8
+            VolumeType: "gp2"
+            DeleteOnTermination: true
+
+
+  ### Launch EC2 Instances in IPv6 only Private Subnets in Application VPC, But DS
+  ApplicationVPCIPv6EC2InstanceAZA:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: "t3.micro"
+      ImageId: !Ref AMIId
+      Tenancy: "default"
+      SubnetId: !Ref ApplicationVPCIPv6OnlyPrivateSubnet1
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      # IamInstanceProfile: !Ref IAMInstanceProfile
+      IamInstanceProfile: LabInstanceProfile
+      SecurityGroupIds:
+        - !Ref IPv6EC2InstanceSecurityGroupApplicationVPC
+      Tags:
+        - Key: "Name"
+          Value: "Application VPC IPv6-only EC2 Instance AZA"
+      BlockDeviceMappings:
+        - DeviceName: "/dev/xvda"
+          Ebs:
+            Encrypted: false
+            VolumeSize: 8
+            VolumeType: "gp2"
+            DeleteOnTermination: true
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum -y update
+          yum -y install httpd
+          yum -y install php
+          printf "<?php\n\$ip = array(\"ip\"=>\$_SERVER['REMOTE_ADDR'], \"x-forwarded-for\"=>\$_SERVER['HTTP_X_FORWARDED_FOR']);\necho json_encode(\$ip);\n?>\n"> /var/www/html/index.php
+          systemctl enable httpd
+          systemctl start httpd
+
+  ApplicationVPCIPv6EC2InstanceAZB:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: "t3.micro"
+      ImageId: !Ref AMIId
+      Tenancy: "default"
+      SubnetId: !Ref ApplicationVPCIPv6OnlyPrivateSubnet2
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      # IamInstanceProfile: !Ref IAMInstanceProfile
+      IamInstanceProfile: LabInstanceProfile
+      SecurityGroupIds:
+        - !Ref IPv6EC2InstanceSecurityGroupApplicationVPC
+      Tags:
+        - Key: "Name"
+          Value: "Application VPC IPv6-only EC2 Instance AZB"
+      BlockDeviceMappings:
+        - DeviceName: "/dev/xvda"
+          Ebs:
+            Encrypted: false
+            VolumeSize: 8
+            VolumeType: "gp2"
+            DeleteOnTermination: true
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum -y update
+          yum -y install httpd
+          yum -y install php
+          printf "<?php\n\$ip = array(\"ip\"=>\$_SERVER['REMOTE_ADDR'], \"x-forwarded-for\"=>\$_SERVER['HTTP_X_FORWARDED_FOR']);\necho json_encode(\$ip);\necho \"<br />\"\n?>\n"> /var/www/html/index.php
+          systemctl enable httpd
+          systemctl start httpd
+
+### Create ALB in Application VPC
+  PrivateLoadBalancerSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Access to the internal load balancer
+      GroupName: "ALB Security Group"
+      VpcId: !Ref 'ApplicationVPC'
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+        - CidrIpv6: "::/0"
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIpv6: "::/0"
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80

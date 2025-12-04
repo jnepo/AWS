@@ -1,0 +1,18 @@
+Session 8
+https://www.youtube.com/watch?v=7EPUnEgCmho&t=947s
+27:20
+6 Pilares del WAF: https://docs.aws.amazon.com/es_es/wellarchitected/latest/framework/the-pillars-of-the-framework.html
+
+Operational excellence
+Security
+Reliability
+Performance efficiency
+Cost optimization
+Sustainability
+
+Patrones de diseño
+Cloud Adoption Framework (CAF): areas 
+Tipos storage s3: cuantos hay y cuantos se usan
+Tipos storage EBS
+Diferencias entre security group y NACL
+Tipos de storage BK y DB

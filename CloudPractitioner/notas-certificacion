@@ -16,3 +16,89 @@ Tipos storage s3: cuantos hay y cuantos se usan
 Tipos storage EBS
 Diferencias entre security group y NACL
 Tipos de storage BK y DB
+
+Incorrecto. Amazon Connect es un centro de contacto omnicanal en la nube que te ayuda a proporcionar un servicio de atención al cliente superior a un coste menor. Amazon Connect ofrece una experiencia perfecta por voz y chat para tus clientes y agentes. Amazon Connect no es un servicio que conecte una red en las instalaciones a AWS.
+https://docs.aws.amazon.com/es_es/connect/latest/adminguide/what-is-amazon-connect.html
+
+
+Correcto. Direct Connect vincula tu red interna a una ubicación de Direct Connect a través de un cable de fibra óptica Ethernet estándar. Un extremo del cable se conecta al enrutador. El otro extremo del cable se conecta a un enrutador de Direct Connect. AWS Direct Connect es un servicio coherente y privado porque tu empresa es la única que usa el cable.
+https://docs.aws.amazon.com/es_es/directconnect/latest/UserGuide/Welcome.html
+
+Correcto. Amazon Polly es un servicio de machine learning que convierte texto en voz. Este servicio ofrece la posibilidad de leer un texto en voz alta.
+
+Incorrecto. Amazon Translate es un servicio de machine learning de traducción de idiomas. Amazon Translate no es un servicio de conversión de texto a voz.
+
+Incorrecto. Amazon Textract es un servicio de machine learning que puede extraer texto de documentos escaneados. Amazon Textract no es un servicio de conversión de texto a voz.
+
+Correcto. ACM es un servicio que sirve para crear, almacenar y renovar certificados SSL/TLS públicos y privados. Puedes usarlo para implementar el cifrado en tránsito y en reposo mediante un protocolo, como TLS.
+
+Incorrecto. AWS RAM es un servicio que sirve para compartir recursos entre las cuentas de AWS. No puedes usarlo para implementar el cifrado de los datos en tránsito.
+https://docs.aws.amazon.com/es_es/ram/latest/userguide/what-is.html
+
+Incorrecto. Shield es un servicio que se utiliza para proteger contra los ataques de denegación de servicio distribuido (DDoS). No puedes usarlo para implementar el cifrado de los datos en tránsito.
+
+Incorrecto. Security Hub es un servicio que se utiliza para ver de forma centralizada la posición de seguridad en AWS. Puedes usarlo para comprobar si tu entorno de AWS cumple los estándares y las prácticas recomendadas del sector en materia de seguridad. No puedes usarlo para implementar el cifrado de los datos en tránsito.
+https://docs.aws.amazon.com/es_es/securityhub/latest/userguide/what-is-securityhub.html
+
+Incorrecto. Las instancias reservadas guardan cierta capacidad para su uso en cualquier momento. En ocasiones, las instancias reservadas pueden ofrecerte un descuento. Sin embargo, esta capacidad no es una capacidad no utilizada.
+
+Incorrecto. Las instancias bajo demanda son la opción de compra predeterminada y están disponibles de inmediato. Las instancias bajo demanda no tienen descuentos.
+
+Incorrecto. Las instancias dedicadas se ejecutan en las VPC en hardware dedicado a ese cliente individual y se suelen utilizar cuando hay restricciones de licencia o conformidad. Las instancias dedicadas no tienen descuentos
+
+Correcto. Macie es un servicio de evaluación de seguridad automatizado que ayuda a mejorar la seguridad y la conformidad de las aplicaciones desplegadas en AWS.
+
+Incorrecto. GuardDuty es un servicio de detección de amenazas que supervisa continuamente en busca de actividad maliciosa y comportamientos no autorizados para proteger las cuentas y cargas de trabajo de AWS. GuardDuty no clasifica los datos de S3.
+
+Incorrecto. AWS Cloud Map crea y mantiene un mapa de servicios de backend. AWS Cloud Map no abordará la gobernanza ni la consolidación de pagos.
+
+Incorrecto. OpsCenter proporciona una ubicación central para que los profesionales de las TI vean, investiguen y resuelvan los elementos de trabajo operativos. OpsCenter no consolida la facturación.
+
+Incorrecto. Esta solución consolida la facturación en un informe, pero solo funcionará para las cuentas individuales (sin facturación entre cuentas). Esta solución no aborda la gobernanza central.
+https://docs.aws.amazon.com/es_es/cur/latest/userguide/what-is-cur.html
+
+Incorrecto. El plan Basic Support proporciona soporte al cliente para problemas no técnicos, como aumentos en las cuotas de servicio. Sin embargo, el plan Basic Support no proporciona soporte técnico.
+
+Incorrecto. El plan Developer Support solo permite la creación de tickets de soporte por correo electrónico y no proporciona soporte telefónico.
+
+
+Correcto. Puedes comunicarte con el equipo de soporte técnico por teléfono o chat mediante el plan Business Support o el plan Enterprise Support. El plan Business Support es el plan mínimo que ofrece esta función.
+
+Incorrecto. El plan Enterprise Support ofrece soporte telefónico, pero no es el plan mínimo para hacerlo.
+
+
+Correcto. Trusted Advisor comprueba los grupos de seguridad en busca de reglas que permitan el acceso sin restricciones a un recurso. El acceso sin restricciones aumenta las oportunidades de actividad maliciosa, como pirateo informático, ataques por denegación de servicio o pérdida de datos. 
+
+Incorrecto. IAM es un servicio que puede usar para administrar los permisos que controlan a qué recursos de AWS pueden acceder los usuarios. No identifica los grupos de seguridad que permiten el acceso sin restricciones.
+
+Incorrecto. CloudTrail proporciona un registro de auditoría de las llamadas a la API. No identifica los grupos de seguridad que permiten el acceso sin restricciones.
+
+Incorrecto. CloudWatch es un servicio de supervisión que recopila las métricas de los recursos de AWS y realiza un seguimiento de ellas. No identifica los grupos de seguridad que permiten el acceso sin restricciones.
+
+
+### credenciales se requieren para obtener acceso mediante programación 
+
+Incorrecto. Una clave principal es una función que se utiliza en la administración de bases de datos. No concede acceso a las cuentas de AWS.
+
+Correcto. El acceso mediante programación requiere un ID de clave de acceso y una clave de acceso secreta que se pueden asignar a un usuario de AWS.
+
+Incorrecto. Se utiliza un ID de usuario para las credenciales de seguridad de IAM, pero no para el acceso mediante programación.
+
+Incorrecto. Una clave secundaria es una función que se utiliza en la administración de bases de datos. No concede acceso a las cuentas de AWS.
+
+Correcto. El acceso mediante programación requiere un ID de clave de acceso y una clave de acceso secreta que se pueden asignar a un usuario de AWS.
+
+Incorrecto. CloudFront es un servicio web que acelera la distribución de tu contenido web estático y dinámico a los usuarios. CloudFront entrega tu contenido a través de una red mundial de centros de datos que se conocen como ubicaciones periféricas. Cuando un usuario solicita contenido que suministras a través de CloudFront, la solicitud se enruta a la ubicación periférica que proporciona la latencia más baja. Sin embargo, CloudFront no proporciona una conexión de red.
+https://docs.aws.amazon.com/es_es/AmazonCloudFront/latest/DeveloperGuide/Introduction.html
+
+
+Correcto. AWS MGN es una solución automatizada de lift and shift. Esta solución puede migrar los servidores físicos y cualquier base de datos o aplicación que se ejecute en ellos a instancias de EC2 en AWS.
+
+Incorrecto. Application Discovery Service recopila información sobre el uso y la configuración de los servidores en las instalaciones para ayudar a planificar una migración a AWS. En realidad, Application Discovery Service no realiza operaciones de migración.
+
+Incorrecto. Migration Hub es un servicio que ayuda a planificar las migraciones de aplicaciones y a realizar un seguimiento del proceso. Migration Hub no realiza migraciones de sistemas.
+https://docs.aws.amazon.com/es_es/migrationhub/latest/ug/whatishub.html
+
+Incorrecto. AWS DMS se puede utilizar para migrar datos de una base de datos en las instalaciones a una base de datos en AWS. Sin embargo, AWS DMS no migra el servidor real a una instancia de EC2.
+
+

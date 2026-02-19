@@ -102,3 +102,19 @@ https://docs.aws.amazon.com/es_es/migrationhub/latest/ug/whatishub.html
 Incorrecto. AWS DMS se puede utilizar para migrar datos de una base de datos en las instalaciones a una base de datos en AWS. Sin embargo, AWS DMS no migra el servidor real a una instancia de EC2.
 
 
+Controles compartidos (cliente y AWS)
+- administración de la configuración: AWS mantiene la configuración de los dispositivos de infraestructura de AWS. Los clientes configuran sistemas operativos, bases de datos y aplicaciones huéspedes.
+- administración de parches: AWS aplicará parches y corregirá los defectos en la infraestructura. Los clientes deben aplicar parches a los sistemas operativos y aplicaciones huéspedes.
+
+
+Una empresa necesita hacer una migración única de 40 TB de datos desde sus servidores de almacenamiento en las instalaciones hacia Amazon S3. La transferencia se debe hacer lo más rápido posible, pero al mismo tiempo, los costos deben ser mínimos. La empresa tiene una conectividad a internet de 100 Mbps. ¿Qué servicio de AWS podría cumplir con estos requisitos?
+- Incorrecto. S3 Transfer Acceleration puede agilizar las transferencias para y desde Amazon S3 para transferencias de larga distancia o archivos de gran tamaño. S3 Transfer Acceleration no corregiría la velocidad de conexión de 100 Mbps. Además, S3 Transfer Acceleration es más **adecuada para trabajos de transferencia de datos recurrentes y no para una migración única.**
+- Correcto. Snowball Edge se utiliza para el transporte de datos a gran escala. Snowball Edge puede transferir a altas velocidades y de forma segura grandes cantidades de datos a la nube de AWS.
+
+¿Qué servicio ofrece a los clientes la posibilidad de auditar y monitorear los cambios en los recursos de AWS?
+- Correcto. AWS Config es un servicio que le permite evaluar y auditar las configuraciones de los recursos de AWS.
+- Incorrecto. Amazon Inspector prueba la accesibilidad de red de las instancias de Amazon EC2 y el estado de seguridad de las aplicaciones que se ejecutan en dichas instancias. Amazon Inspector no monitorea los cambios en los recursos de AWS.
+
+
+
+

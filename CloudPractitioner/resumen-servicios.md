@@ -21,13 +21,17 @@ Servicio de gobernanza y auditoría que registra las acciones de los usuarios y 
 ## Amazon Cognito 
 Servicio de AWS que gestiona la autenticación, autorización y administración de usuarios para aplicaciones móviles y web, permitiendo el inicio de sesión seguro (social o empresarial) y el control de acceso a recursos. Escala a millones de usuarios, soporta estándares como SAML 2.0 y OIDC, y ofrece credenciales temporales para acceder a servicios de AWS
 
-AWS Artifact es un servicio de autoservicio en la consola de AWS que proporciona acceso bajo demanda a los informes de seguridad, cumplimiento (ISO, SOC, PCI) y acuerdos legales de Amazon Web Services (AWS). Permite a los usuarios descargar documentación técnica necesaria para auditorías y verificar la responsabilidad compartida de seguridad
+## AWS Artifact 
+es un servicio de autoservicio en la consola de AWS que proporciona acceso bajo demanda a los informes de seguridad, cumplimiento (ISO, SOC, PCI) y acuerdos legales de Amazon Web Services (AWS). Permite a los usuarios descargar documentación técnica necesaria para auditorías y verificar la responsabilidad compartida de seguridad
 
-AWS Outposts es un servicio gestionado que extiende la infraestructura, los servicios, las API y las herramientas de AWS a prácticamente cualquier centro de datos, espacio de coubicación o instalación local. Permite a las empresas ejecutar cargas de trabajo de forma local, proporcionando una experiencia híbrida consistente con baja latencia y procesamiento de datos local
+## AWS Outposts
+es un servicio gestionado que extiende la infraestructura, los servicios, las API y las herramientas de AWS a prácticamente cualquier centro de datos, espacio de coubicación o instalación local. Permite a las empresas ejecutar cargas de trabajo de forma local, proporcionando una experiencia híbrida consistente con baja latencia y procesamiento de datos local
 
-AWS CloudHSM es un servicio basado en la nube que proporciona módulos de seguridad de hardware (HSM) dedicados para gestionar, almacenar y utilizar claves criptográficas de forma segura, cumpliendo con la norma FIPS 140-2 Nivel 3. Ofrece control exclusivo (inquilino único) sobre las claves y operaciones criptográficas, eliminando la necesidad de mantener hardware físico
+## AWS CloudHSM
+es un servicio basado en la nube que proporciona módulos de seguridad de hardware (HSM) dedicados para gestionar, almacenar y utilizar claves criptográficas de forma segura, cumpliendo con la norma FIPS 140-2 Nivel 3. Ofrece control exclusivo (inquilino único) sobre las claves y operaciones criptográficas, eliminando la necesidad de mantener hardware físico
 
-AWS Directory Service es un conjunto de servicios gestionados de Amazon Web Services que permite integrar directorios, gestionar identidades, y controlar el acceso a recursos en la nube. Facilita el uso de credenciales existentes (como Active Directory) para iniciar sesión en AWS, gestionar usuarios, grupos y dispositivos, y soportar aplicaciones basadas en directorios
+## AWS Directory Service
+es un conjunto de servicios gestionados de Amazon Web Services que permite integrar directorios, gestionar identidades, y controlar el acceso a recursos en la nube. Facilita el uso de credenciales existentes (como Active Directory) para iniciar sesión en AWS, gestionar usuarios, grupos y dispositivos, y soportar aplicaciones basadas en directorios
 
 ## Amazon Kinesis 
 Servicio en la nube totalmente administrado diseñado para recopilar, procesar y analizar datos en tiempo real (streaming) a gran escala, permitiendo obtener información inmediata. Funciona sin servidor, ofreciendo bajas latencias para gestionar volúmenes de datos masivos provenientes de miles de fuentes. Se compone de cuatro servicios: Data Streams, Data Firehose, Data Analytics y Video Streams

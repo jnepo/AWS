@@ -10,7 +10,9 @@ servicio de servidor privado virtual (VPS) de Amazon Web Services (AWS) diseñad
 solución de centro de contacto omnicanal basada en la nube (CCaaS) de Amazon Web Services (AWS), diseñada para ofrecer un servicio al cliente superior a menor costo. Permite a las empresas configurar y gestionar flujos de atención (voz, chat, correo) en minutos, sin hardware ni licencias complejas, utilizando inteligencia artificial y pago por uso.
 
 ## AWS Global Accelerator 
-Servicio de red de Amazon Web Services que mejora la disponibilidad y el rendimiento de las aplicaciones hasta en un 60% para usuarios globales. Utiliza la red troncal privada de AWS y direcciones IP estáticas para dirigir el tráfico al punto de conexión (endpoint) más cercano y saludable, reduciendo la latencia de internet.
+Servicio de red de Amazon Web Services que mejora la disponibilidad y el rendimiento de las aplicaciones hasta en un 60% para usuarios globales. Utiliza la red troncal privada de AWS y direcciones IP estáticas para dirigir el tráfico al punto de conexión (endpoint) más cercano y saludable, reduciendo la latencia de internet. Global Accelerator ayuda a aumentar la disponibilidad y el rendimiento de las aplicaciones alojadas en AWS.
+
+
 
 ## AWS Storage Gateway
 servicio de almacenamiento en la nube híbrida que conecta entornos locales (on-premises) con el almacenamiento de AWS. Permite a las aplicaciones locales utilizar el almacenamiento casi ilimitado de Amazon S3, Glacier o EBS mediante protocolos estándar, ofreciendo acceso de baja latencia y gestionando automáticamente la transferencia de datos a la nube
@@ -45,3 +47,167 @@ proporciona orientación y prácticas recomendadas sobre cómo hacer la migraci�
 ## AWS KMS 
 se puede utilizar para habilitar la encriptación del lado del servidor de los datos de CloudTrail. AWS KMS facilita la creación y administración de claves criptográficas, como también controla su uso en una amplia gama de servicios de AWS.
 
+Buen bloque—estos servicios suelen aparecer como **preguntas cortas de reconocimiento**. Te los ordeno por dominio (costos, gestión, datos, transferencia) con foco en **qué hacen y cuándo usarlos**.
+
+---
+
+## 💰 Costos y optimización
+
+### 🔹 AWS Budgets
+
+* Permite definir **presupuestos** (costo/uso)
+* Envía **alertas** cuando superás umbrales
+
+✔ Uso:
+
+* Control financiero
+* Alertas proactivas
+
+👉 Tip examen:
+
+> “notificar si gasto supera X” → **Budgets**
+
+---
+
+### 🔹 AWS Cost Explorer
+
+* Visualiza costos históricos
+* Permite:
+
+  * análisis por servicio
+  * tendencias
+  * forecast
+
+✔ Uso:
+
+* Analizar gasto, no alertar
+
+👉 Diferencia clave:
+
+* Budgets = alertas
+* Cost Explorer = análisis
+
+---
+
+## ⚙️ Gestión y operaciones
+
+### 🔹 AWS Systems Manager
+
+* Gestión centralizada de instancias (EC2 y on-prem)
+* Funcionalidades:
+
+  * Patch Manager
+  * Run Command
+  * Session Manager (SSH sin abrir puertos)
+
+✔ Uso:
+
+* Administración sin acceso directo (SSH/RDP)
+
+👉 Tip examen:
+
+> “administrar servidores sin abrir puertos” → Systems Manager
+
+---
+
+### 🔹 AWS Key Management Service (KMS)
+
+* Gestión de **claves de cifrado**
+* Integrado con múltiples servicios AWS
+
+✔ Uso:
+
+* Cifrado de datos (S3, EBS, RDS)
+
+👉 Clave examen:
+
+* AWS maneja infraestructura de claves
+
+---
+
+## 🚀 Migración
+
+### 🔹 AWS Migration Evaluator
+
+* Analiza entorno on-prem
+* Estima:
+
+  * costos en AWS
+  * dimensionamiento
+
+✔ Uso:
+
+* Planificación previa a migración
+
+👉 Antes de migrar → evaluar
+
+---
+
+## 📊 Datos
+
+### 🔹 AWS Data Exchange
+
+* Marketplace de datos de terceros
+* Permite suscribirse a datasets
+
+✔ Uso:
+
+* Finanzas, clima, datasets externos
+
+👉 No es almacenamiento → es **fuente de datos**
+
+---
+
+## 🌐 Transferencia
+
+### 🔹 Amazon S3 Transfer Acceleration
+
+* Acelera uploads a S3 usando edge locations
+* Usa red global de AWS (tipo CloudFront)
+
+✔ Uso:
+
+* Subir archivos desde ubicaciones lejanas
+
+👉 Ejemplo:
+
+* Usuario en Asia subiendo a bucket en Sudamérica
+
+---
+
+## 🧠 Resumen mental (ultra rápido)
+
+```id="aws-mix"
+Costos → Budgets (alerta), Cost Explorer (análisis)  
+Gestión → Systems Manager  
+Seguridad → KMS  
+Migración → Migration Evaluator  
+Datos → Data Exchange  
+Transferencia → S3 Transfer Acceleration  
+```
+
+---
+
+## ⚠️ Trampas típicas
+
+* ❌ “Cost Explorer envía alertas” → falso
+* ❌ “KMS cifra datos directamente” → gestiona claves
+* ❌ “Systems Manager solo para EC2” → también on-prem
+* ❌ “Data Exchange almacena datos propios” → no
+
+---
+
+## 🎯 Cómo te lo preguntan
+
+* “querés ver tendencias de gasto” → Cost Explorer
+* “alerta si gasto supera límite” → Budgets
+* “administrar EC2 sin SSH” → Systems Manager
+* “cifrar datos” → KMS
+* “analizar migración” → Migration Evaluator
+* “datos de terceros” → Data Exchange
+* “subida rápida a S3 global” → Transfer Acceleration
+
+---
+
+Si querés cerrar fuerte:
+👉 te armo un **simulacro final mezclando TODOS los servicios vistos (nivel examen real)**
